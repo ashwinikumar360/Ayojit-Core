@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+httpx
+chromadb
+sentence-transformers
+twilio
+python-dotenv
+pydantic
+slowapi
+pyjwt
+supabase
+cryptography
+python-multipart
+reportlab
+sqlite-utils
+numpy
