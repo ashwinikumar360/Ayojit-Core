@@ -1,0 +1,243 @@
+openapi: 3.0.3
+info:
+  title: Ayojit Intelligence API
+  description: Public API for location intelligence, document generation, and Hindi image generation. Sourced by open models and datasets from AIKosh.
+  version: 1.0.0
+servers:
+  - url: https://api.ayojit.com/v1
+    description: Production API Server
+paths:
+  /status:
+    get:
+      summary: Get system status
+      description: Returns operational status for all applications in the suite. No authentication is required.
+      responses:
+        '200':
+          description: Operational status list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        app_id:
+                          type: string
+                          example: pinai
+                        status:
+                          type: string
+                          example: operational
+                        message:
+                          type: string
+                          example: All systems running normally
+                        updated_at:
+                          type: string
+                          format: date-time
+                          example: '2026-06-16T00:00:00Z'
+  /pinai/insight:
+    post:
+      summary: PinAI location intelligence
+      description: Retrieve business signals and demographic intelligence for a given 6-digit Indian pincode.
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pincode
+              properties:
+                pincode:
+                  type: string
+                  pattern: '^[0-9]{6}$'
+                  example: '834001'
+                business_type:
+                  type: string
+                  example: retail
+      responses:
+        '200':
+          description: Location intelligence metrics and insight
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  metrics:
+                    type: object
+                    properties:
+                      location:
+                        type: object
+                        properties:
+                          office:
+                            type: string
+                            example: Ranchi GPO
+                          district:
+                            type: string
+                            example: Ranchi
+                          state:
+                            type: string
+                            example: Jharkhand
+                      business_signals:
+                        type: object
+                        properties:
+                          market_density_score:
+                            type: number
+                            example: 7.2
+                          delivery_active:
+                            type: boolean
+                            example: true
+                          population_proxy_enrolments:
+                            type: integer
+                            example: 284500
+                  insight:
+                    type: string
+                    example: Moderate market density with strong delivery infrastructure...
+        '400':
+          $ref: '#/components/responses/400Error'
+        '401':
+          $ref: '#/components/responses/401Error'
+        '403':
+          $ref: '#/components/responses/403Error'
+        '504':
+          $ref: '#/components/responses/504Error'
+  /docpatram/generate:
+    post:
+      summary: DocPatram document generator
+      description: Generate a legal or commercial document from a pre-defined template with custom input fields.
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - template_id
+                - fields
+              properties:
+                template_id:
+                  type: string
+                  example: rent_agreement
+                fields:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  example:
+                    landlord_name: Rajesh Kumar
+                    tenant_name: Priya Singh
+                    property_address: 123 MG Road, Ranchi
+                    monthly_rent: '15000'
+      responses:
+        '200':
+          description: Generated document details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    example: Rent Agreement
+                  url:
+                    type: string
+                    format: uri
+                    example: https://storage.example.com/docs/generated/abc123.pdf
+                  preview:
+                    type: string
+                    example: This Rent Agreement is executed on...
+        '400':
+          $ref: '#/components/responses/400Error'
+        '401':
+          $ref: '#/components/responses/401Error'
+        '403':
+          $ref: '#/components/responses/403Error'
+        '504':
+          $ref: '#/components/responses/504Error'
+  /hindidiff/generate:
+    post:
+      summary: HindiDiff image generator
+      description: Generate an image based on a Hindi-language text prompt using open diffusion models.
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  example: एक सुंदर हिमालय का दृश्य सूर्योदय के समय
+      responses:
+        '200':
+          description: Generated image metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  prompt:
+                    type: string
+                    example: एक सुंदर हिमालय का दृश्य सूर्योदय के समय
+                  image_url:
+                    type: string
+                    format: uri
+                    example: https://image.pollinations.ai/prompt/...
+                  seed:
+                    type: integer
+                    example: 42
+        '400':
+          $ref: '#/components/responses/400Error'
+        '401':
+          $ref: '#/components/responses/401Error'
+        '403':
+          $ref: '#/components/responses/403Error'
+        '504':
+          $ref: '#/components/responses/504Error'
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: Invalid input parameters.
+  responses:
+    '400Error':
+      description: Invalid request parameters or bad format
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    '401Error':
+      description: Unauthorized or missing/invalid API Key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    '403Error':
+      description: Forbidden - Api key does not have scope for this application
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    '504Error':
+      description: Gateway timeout - Model service was slow to respond
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

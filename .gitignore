@@ -21,6 +21,9 @@ node_modules/
 .next/
 out/
 
+# TypeScript build info
+tsconfig.tsbuildinfo
+
 # databases and vector index files
 chroma_db/
 *.db
