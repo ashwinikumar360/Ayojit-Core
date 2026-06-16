@@ -1,0 +1,26 @@
+# Ayojit Intelligence — FastAPI Backend Dockerfile
+# Shared across all 5 API services
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY core/ ./core/
+COPY apps/ ./apps/
+
+# Create non-root user
+RUN useradd --create-home appuser
+USER appuser
+
+# Default command (overridden in docker-compose.yml per service)
+CMD ["uvicorn", "apps.pinai.main:app", "--host", "0.0.0.0", "--port", "8001"]

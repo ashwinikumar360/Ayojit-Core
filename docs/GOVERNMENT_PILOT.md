@@ -1,51 +1,95 @@
-# Government Pilot & Deployment Framework
+# Government Pilot Program
 
-This document outlines the deployment models, compliance standards, and data governance practices for deploying applications from the Ayojit product suite within state departments and public agencies.
+Ayojit Intelligence offers two apps specifically designed for government
+deployment: **Kisan Voice AI** and **VaadVivaad**.
 
-## Core Government Offerings
+## Kisan Voice AI — For State Agriculture Departments
 
-Ayojit Intelligence provides two targeted frameworks designed to integrate with state-level administrative systems:
+### What It Does
 
-### 1. Kisan Voice AI (Department of Agriculture)
-- **Use Case:** Multilingual phone-in IVR advisory service for farmers who do not use smartphones.
-- **Data Source:** Integrates the state's Krishi Vigyan Kendra (KVK) datasets and local package of practice (PoP) sheets.
-- **Process Flow:** The farmer dials a designated toll-free number, asks a question in their local dialect, and receives an instant voice response verified by the departmental data repository.
+Farmers call an IVR number, speak a crop-related question in Hindi (or
+regional language), and receive an AI-generated audio response sourced from
+KVK and Kisan Call Centre datasets.
 
-### 2. VaadVivaad (MSME Facilitation Councils / Legal Cells)
-- **Use Case:** Automated pre-mediation summarization and regulatory dispute analysis.
-- **Process Flow:** Both parties submit statements of claim and defense. The system references the MSME Development Act, 2006, runs compliance checks, and generates a structured mediation brief to reduce case prep work for mediation officers.
+### Deployment Model
+
+| Component | Infrastructure | Who Provides |
+|-----------|---------------|-------------|
+| IVR Gateway | Telephony provider | Department |
+| Speech-to-Text | Whisper model (HF Spaces) | Ayojit |
+| Knowledge Base | KCC + KVK datasets | AIKosh / data.gov.in |
+| Text-to-Speech | Indic Parler TTS | Ayojit |
+| Database | Supabase or NIC PostgreSQL | Department |
+
+### Pilot Timeline
+
+| Week | Activity |
+|------|----------|
+| 1 | Requirements mapping and dataset localization |
+| 2-3 | IVR integration testing |
+| 4 | Soft launch in 1 district (50-100 calls/day) |
+| 5-8 | Monitoring and accuracy tuning |
+| 8+ | Statewide rollout decision |
+
+### Success Metrics
+
+- Call completion rate > 85%
+- Answer relevance score > 70% (sampled manual evaluation)
+- Average call duration < 90 seconds
+- Farmer satisfaction rating > 3.5/5
+
+### Cost to Government
+
+- Zero software licensing fees (MIT licensed)
+- Government provides telephony infrastructure only
+- Ayojit provides technical support for the pilot duration
 
 ---
 
-## Deployment Architectures
+## VaadVivaad — For MSME Facilitation Councils
 
-To accommodate varying governmental security clearances, Ayojit offers two deployment configurations:
+### What It Does
 
-### Option A: Empanelled Cloud Deployment (SaaS)
-- **Provider:** Hosted on MEITY-empanelled cloud service providers (e.g., NIC Cloud, AWS India region).
-- **Maintenance:** Handled entirely by Ayojit under a Service Level Agreement (SLA).
-- **Isolation:** Dedicated database schemas and separate JWT keys for each state department.
+MSME facilitation councils submit contract disputes. VaadVivaad generates a
+structured AI mediation summary identifying breach points, recommending
+resolution approaches, and citing relevant precedents.
 
-### Option B: On-Premise / State Data Centre (SDC)
-- **Architecture:** Packaged entirely as isolated Docker containers.
-- **Execution:** Runs on the government department's private hardware without requiring external internet routing for processing core documents.
-- **Dependencies:** All external APIs (like Bhashini translation pipelines) route through the state's official API gateways.
+### Deployment Model
+
+| Component | Infrastructure | Who Provides |
+|-----------|---------------|-------------|
+| Web Portal | Vercel / NIC hosting | Ayojit |
+| AI Analysis | Sarvam 2B / IndicTrans2 | Ayojit |
+| Case Database | Supabase or NIC PostgreSQL | Department |
+| PDF Reports | ReportLab (server-side) | Ayojit |
+
+### Pilot Timeline
+
+| Week | Activity |
+|------|----------|
+| 1 | Workshop with council members |
+| 2-3 | Submit 10 sample disputes for AI analysis |
+| 4 | Compare AI summaries with human mediator output |
+| 5-8 | Process real disputes alongside human review |
+| 8+ | Independent operation decision |
+
+### Success Metrics
+
+- Case processing time reduction > 60%
+- AI summary alignment with human mediator > 75%
+- Council satisfaction rating > 3.5/5
 
 ---
 
-## Data Residency & DPDP Act 2023 Compliance
+## Contact
 
-We enforce strict data isolation rules to ensure compliance with the Digital Personal Data Protection (DPDP) Act 2023:
+Email: tarai.ashwinikumar@gmail.com
+GitHub: github.com/ashwinikumar360/Ayojit-Core
 
-1. **Local Residency:** All databases, logs, and user credentials reside on servers physically located within the territory of India.
-2. **PII Isolation:** Citizen phone numbers and names are one-way hashed using SHA-256 at the database boundary.
-3. **Audit Logging:** Every administrative action is captured in the database to verify that data processing is restricted to the specific query requested by the citizen.
-4. **Consent Revocation:** A citizen's request to clear call transcripts or dispute history triggers an automated deletion script across all backend nodes within 24 hours.
+## Legal Disclaimer
 
-## Initiating a Pilot
-
-State departments and public agencies can initiate a 30-day proof-of-concept pilot with these parameters:
-
-- **Setup Time:** 2 weeks to ingest regional Krishi Vigyan Kendra (KVK) CSVs and configure the Twilio phone mapping.
-- **Free Trial Scale:** Limited to 1,000 inbound calls or 50 filed disputes for initial validation.
-- **Contact:** Open an issue on this repository using the `partnership` template, or email Ashwini Kumar Tarai directly at `tarai.ashwinikumar@gmail.com`.
+This application uses publicly available AI models/datasets sourced via
+AIKosh (aikosh.indiaai.gov.in), maintained by IndiaAI under the Ministry
+of Electronics & Information Technology, Government of India. Ayojit
+Intelligence is an independent product and is not affiliated with, endorsed
+by, or sponsored by AIKosh, IndiaAI, or the Government of India.

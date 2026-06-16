@@ -2,10 +2,13 @@ import os
 import logging
 import jwt
 from datetime import date
+from typing import Optional
 from fastapi import Header, HTTPException, Depends
 from supabase import create_client, Client
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+
+DEMO_MODE = os.getenv("DEMO_MODE", "false").lower() == "true"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("core.auth")

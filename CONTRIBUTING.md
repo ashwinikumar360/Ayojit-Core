@@ -1,58 +1,104 @@
-# Contributing to Ayojit Core
+# Contributing to Ayojit Intelligence
 
-We welcome contributions to the Ayojit Intelligence civic product suite. Please read this document before setting up your development workspace.
+We welcome contributions from developers, designers, and domain experts.
 
-## Development Environment Setup
+## How to Contribute
 
-This project uses a hybrid Next.js frontend and multiple FastAPI microservice backends:
+### 1. Fork and Clone
 
-1. **System Prerequisites:**
-   - Node.js (v18 or v20)
-   - Python (v3.10 or v3.11)
-   - SQLite3 and Tesseract OCR installed on your system path.
+```bash
+git clone https://github.com/YOUR_USERNAME/Ayojit-Core.git
+cd Ayojit-Core
+cp .env.example .env
+# Fill in your Supabase credentials
+```
 
-2. **Installation Steps:**
-   - Clone this repository.
-   - Run the frontend installation:
-     ```bash
-     npm install
-     ```
-   - Initialize and configure the Python virtual environment at the parent directory:
-     ```bash
-     python -m venv .venv
-     # Windows activation
-     .venv\Scripts\activate
-     # Unix activation
-     source .venv/bin/activate
-     pip install -r requirements.txt
-     ```
-   - Copy the `.env.example` file to `.env.local` and configure keys for local execution.
+### 2. Set Up Development Environment
 
-## Branch Naming and Workflow
+**Frontend (Next.js)**
+```bash
+npm install
+npm run dev
+# Opens at http://localhost:3000
+```
 
-- Base all changes on the `main` branch.
-- Use the following naming convention for feature development and bug fixes:
-  - `feat/app-name-feature` (e.g., `feat/pinai-sqlite-loader`)
-  - `fix/app-name-bug` (e.g., `fix/hindidiff-magic-check`)
-- Keep commits focused. Write descriptive messages (e.g., `feat: integrate Dodo Payments webhook in core/billing.py`).
+**Backend (FastAPI)**
+```bash
+pip install -r requirements.txt
+uvicorn apps.pinai.main:app --reload --port 8001
+```
 
-## Pull Request Checklist
+### 3. Branch Naming
 
-Before submitting a Pull Request, verify that:
+```
+feature/add-tamil-support
+fix/pinai-quota-check
+docs/update-api-reference
+```
 
-- [ ] All code conforms to formatting rules (Black + Isort for Python, Prettier for TypeScript).
-- [ ] No local machine learning model weights are loaded in backend applications (offloading must go to remote spaces).
-- [ ] All unit tests pass cleanly by running:
-  ```bash
-  python verify_free_api_stack.py
-  ```
-- [ ] The standard AIKosh attribution disclaimer footer is included on any new frontend app pages.
-- [ ] No raw credentials or API tokens are hardcoded.
+### 4. Commit Messages
 
-## How to Add a New AIKosh Model or Dataset
+Use conventional commits:
+```
+feat(pinai): add expansion planner endpoint
+fix(auth): handle expired JWT tokens
+docs(api): update v1 rate limit documentation
+```
 
-To integrate a new dataset or model from the AIKosh platform:
+### 5. Pull Request Process
 
-1. **Attribution:** Open `AIKOSH_ATTRIBUTION.md` and add the model name, source link, license, and purpose.
-2. **Offline Fallback:** Ensure that if the remote server or Hugging Face Space endpoint is down, the code catches the error and falls back to a rule-based generator or localized dictionary lookup without crashing.
-3. **Log Compliance:** Add a compliance record inside `core/compliance.py` logging the model name and license version (e.g., Godl-India or MIT) to ensure audit requirements are met.
+1. Create a PR against `main`
+2. Fill in the PR template
+3. Wait for one review
+4. Address feedback
+5. Merge after approval
+
+## Code Style
+
+### Python (Backend)
+- Python 3.11+
+- Type hints on all function signatures
+- Docstrings on all public functions
+- `black` formatting (line length 100)
+- `ruff` linting
+
+### TypeScript (Frontend)
+- React 18+ with Next.js App Router
+- `'use client'` directive on interactive components
+- Neo-Brutalism styling (see Design.md)
+- No TailwindCSS utilities outside the design system
+
+### SQL
+- Table names: lowercase, underscored
+- All tables must have RLS policies
+- Include migration comments
+
+## Architecture Boundaries
+
+- **Frontend**: Next.js (Vercel) — no server-side data mutations
+- **Backend**: FastAPI microservices — one per app
+- **Database**: Supabase (PostgreSQL) — shared schema
+- **Auth**: Supabase Auth with JWT verification in FastAPI
+- **Billing**: Dodo Payments — webhook-based
+
+## Adding a New App
+
+1. Create `apps/your_app/main.py` with FastAPI router
+2. Add schema tables to `supabase/schema.sql`
+3. Create `app/apps/your-app/page.tsx` frontend
+4. Add quota config to `core/auth.py`
+5. Update `docker-compose.yml`
+6. Add to landing page app grid
+
+## AI Model Policy
+
+All AI models must be:
+- Sourced from AIKosh or open model hubs
+- Licensed under Apache-2.0, MIT, or GODL-India
+- Tracked in the `asset_registry` table
+- Attributed in the footer
+
+## License
+
+This project is licensed under the MIT License. By contributing, you agree that
+your contributions will be licensed under the same license.

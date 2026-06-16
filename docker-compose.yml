@@ -1,0 +1,153 @@
+version: "3.8"
+
+# Ayojit Intelligence — Self-Hosted Docker Compose
+# Run: docker compose up -d
+# Docs: docs/SELF_HOSTING.md
+
+services:
+  # ---- Next.js Frontend ----
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_DEMO_MODE=${DEMO_MODE:-false}
+      - NEXT_PUBLIC_BASE_URL=${BASE_URL:-http://localhost:3000}
+    depends_on:
+      - kisan-api
+      - pinai-api
+      - docpatram-api
+      - vaadvivaad-api
+      - hindidiff-api
+    restart: unless-stopped
+    networks:
+      - ayojit-network
+
+  # ---- Kisan Voice AI API ----
+  kisan-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: uvicorn apps.kisan_voice_ai.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_SERVICE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - HF_SPACE_WHISPER=${HF_SPACE_WHISPER:-}
+      - HF_SPACE_TTS=${HF_SPACE_TTS:-}
+      - DEMO_MODE=${DEMO_MODE:-false}
+    volumes:
+      - kisan-data:/app/data
+    restart: unless-stopped
+    networks:
+      - ayojit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ---- PinAI API ----
+  pinai-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: uvicorn apps.pinai.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_SERVICE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - DEMO_MODE=${DEMO_MODE:-false}
+    volumes:
+      - pinai-data:/app/data
+    restart: unless-stopped
+    networks:
+      - ayojit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ---- DocPatram API ----
+  docpatram-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: uvicorn apps.docpatram.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_SERVICE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - DEMO_MODE=${DEMO_MODE:-false}
+    restart: unless-stopped
+    networks:
+      - ayojit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ---- VaadVivaad API ----
+  vaadvivaad-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: uvicorn apps.vaadvivaad.main:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_SERVICE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - DEMO_MODE=${DEMO_MODE:-false}
+    restart: unless-stopped
+    networks:
+      - ayojit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ---- HindiDiff API ----
+  hindidiff-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: uvicorn apps.hindidiff.main:app --host 0.0.0.0 --port 8004
+    ports:
+      - "8004:8004"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_SERVICE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - POLLINATIONS_BASE_URL=${POLLINATIONS_BASE_URL:-https://image.pollinations.ai/prompt}
+      - DEMO_MODE=${DEMO_MODE:-false}
+    restart: unless-stopped
+    networks:
+      - ayojit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  kisan-data:
+  pinai-data:
+
+networks:
+  ayojit-network:
+    driver: bridge
