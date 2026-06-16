@@ -16,10 +16,10 @@
    - Supabase JWT decoding/validation.
    - Usage check (`get_today_usage`) and usage logging (`increment_usage`).
    - Dependency factory (`enforce_quota`) to intercept backend calls and return HTTP 429 when limits are reached.
-2. Build the shared Razorpay endpoints (`core/billing.py`):
+2. Build the shared Dodo Payments endpoints (`core/billing.py`):
    - `/create-subscription/{app_id}` to generate a checkout session.
    - `/webhook` to listen to payment notifications and update `subscriptions` table.
-3. Build the Next.js `/apps/{app_id}/billing` route containing the Razorpay checkout script.
+3. Build the Next.js `/apps/{app_id}/billing` route containing the Dodo Payments checkout script.
 
 ## Step 4: App 5 — HindiDiff (Inference Offloaded)
 1. Write a `Dockerfile` for Hugging Face Spaces containing cup-punjab/Baaz-v1 Stable Diffusion pipeline using `diffusers` library. Deploy to HF Space.
@@ -46,7 +46,7 @@
 
 ## Step 7: App 4 — VaadVivaad
 1. Implement backend `/dispute/file` and `/dispute/respond` endpoints:
-   - File dispute: Save metadata to SQLite. First filing is free, subsequent ones check Razorpay payment token.
+   - File dispute: Save metadata to SQLite. First filing is free, subsequent ones check Dodo Payments payment token.
    - Respond: Add respondent statement and trigger Sarvam-105B API to evaluate claims.
    - Mediation: Generate a structured PDF using `reportlab`.
 2. Build Next.js frontend: Filing Form, shareable Response page, and status tracking tab.

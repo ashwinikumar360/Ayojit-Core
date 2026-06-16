@@ -39,7 +39,7 @@ CREATE TABLE public.subscriptions (
   user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT null,
   app_id TEXT NOT NULL CHECK (app_id IN ('kisan-voice-ai', 'pinai', 'docpatram', 'vaadvivaad', 'hindidiff')),
   plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'paid')),
-  razorpay_subscription_id TEXT,
+  dodo_payments_subscription_id TEXT,
   status TEXT DEFAULT 'active' CHECK (status IN ('active', 'cancelled', 'past_due', 'pending')),
   current_period_end TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),

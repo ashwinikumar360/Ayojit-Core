@@ -67,11 +67,11 @@ Render free-tier instances (512MB RAM cap) cannot load large PyTorch models loca
 
 ### 3.3 Webhook Security
 - **Twilio calls:** Validate signatures using Twilio's request validator.
-- **Razorpay alerts:** Verify SHA256 HMAC signature using the `RAZORPAY_WEBHOOK_SECRET`.
+- **Dodo Payments alerts:** Verify webhook signatures using the `DODO_WEBHOOK_SECRET` and Standard Webhooks specification.
 
 ---
 
 ## 4. Shared Ayojit Core APIs
-- `/billing/create-subscription/{app_id}`: Creates Razorpay subscription, writes `pending` state to Supabase `subscriptions`.
-- `/billing/webhook`: Listens to `subscription.activated` and `subscription.cancelled` events, updating Supabase accordingly.
+- `/billing/create-subscription/{app_id}`: Creates Dodo Payments subscription, writes `pending` state to Supabase `subscriptions`.
+- `/billing/webhook`: Listens to `payment.succeeded`, `payment.failed`, and `subscription.cancelled` events, updating Supabase accordingly.
 - `/core/auth.py` (dependency): Decodes Supabase JWT token (`HS256` payload validation) and enforces daily usage quotas against `usage_logs`.

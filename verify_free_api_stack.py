@@ -1,5 +1,7 @@
 import os
 import sys
+import hmac
+import hashlib
 import unittest
 import asyncio
 from unittest.mock import patch, MagicMock
@@ -101,6 +103,62 @@ class TestFreeApiStack(unittest.TestCase):
         self.assertEqual(context.exception.status_code, 429)
         self.assertEqual(context.exception.detail["error"], "quota_exceeded")
         self.assertIn("Premium daily limit reached", context.exception.detail["message"])
+
+    def test_dodo_base_url_resolution(self):
+        from core.billing import get_dodo_base_url
+        with patch.dict(os.environ, {"DODO_API_KEY": "dp_test_12345"}):
+            self.assertEqual(get_dodo_base_url(), "https://test.dodopayments.com")
+        with patch.dict(os.environ, {"DODO_API_KEY": "dp_live_12345"}):
+            self.assertEqual(get_dodo_base_url(), "https://live.dodopayments.com")
+        with patch.dict(os.environ, {"DODO_API_KEY": "live_key"}):
+            self.assertEqual(get_dodo_base_url(), "https://live.dodopayments.com")
+        with patch.dict(os.environ, {"DODO_API_KEY": "test_key"}):
+            self.assertEqual(get_dodo_base_url(), "https://test.dodopayments.com")
+
+    def test_verify_webhook_signature(self):
+        from core.billing import verify_webhook_signature
+        import base64
+        
+        # Setup dummy keys and data
+        webhook_id = "evt_test_123"
+        timestamp = "1700000000"
+        payload = b'{"type": "payment.succeeded"}'
+        secret = "whsec_dGVzdF9zZWNyZXQ="  # base64 for "test_secret"
+        
+        # Calculate valid signature
+        secret_bytes = base64.b64decode("dGVzdF9zZWNyZXQ=")
+        signed_content = f"{webhook_id}.{timestamp}.{payload.decode()}".encode()
+        computed = hmac.new(secret_bytes, signed_content, hashlib.sha256).digest()
+        valid_signature = "v1," + base64.b64encode(computed).decode()
+        
+        # Test success
+        with patch.dict(os.environ, {"DODO_WEBHOOK_SECRET": secret}):
+            # Should not raise exception
+            verify_webhook_signature(payload, valid_signature, webhook_id, timestamp)
+            
+            # Test failure
+            with self.assertRaises(HTTPException) as ctx:
+                verify_webhook_signature(payload, "v1,invalid_signature", webhook_id, timestamp)
+            self.assertEqual(ctx.exception.status_code, 400)
+
+    @patch("httpx.Client.get")
+    def test_verify_dodo_payment(self, mock_get):
+        from vaadvivaad.backend.main import verify_dodo_payment
+        
+        # Mock successful payment check
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.json.return_value = {"payment_status": "succeeded"}
+        mock_get.return_value = mock_resp
+        
+        with patch.dict(os.environ, {"DODO_API_KEY": "dp_test_key"}):
+            res = verify_dodo_payment("cks_payment_123")
+            self.assertTrue(res)
+            
+            # Mock failed status check
+            mock_resp.json.return_value = {"payment_status": "failed"}
+            res = verify_dodo_payment("cks_payment_123")
+            self.assertFalse(res)
 
 if __name__ == "__main__":
     unittest.main()

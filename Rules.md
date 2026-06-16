@@ -14,7 +14,7 @@
 ---
 
 ## 3. Webhook & Endpoint Security
-- **Signature verification:** Every webhook endpoint (Razorpay payment notifications, Twilio incoming voice calls) must verify HTTP request signatures server-side before parsing payloads.
+- **Signature verification:** Every webhook endpoint (Dodo Payments notifications, Twilio incoming voice calls) must verify HTTP request signatures server-side before parsing payloads.
 - **JWT authorization:** All non-webhook endpoints must require a valid Supabase JWT token. Anonymous writes are strictly prohibited.
 - **CORS configuration:** Restrict CORS origins to `https://ayojit-intelligence.vercel.app` and `http://localhost:3000` (for development). Never allow wildcard `*` origins.
 - **Rate limiting:** Implement `slowapi` rate limits (maximum 10 requests per minute per IP address) on all endpoints on top of the quota system.

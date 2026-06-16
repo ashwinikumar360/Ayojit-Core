@@ -10,7 +10,7 @@ Our goal is to launch a suite that solves real problems for Indian citizens, far
 ## 2. Shared Core System (Ayojit Core)
 All 5 applications sit behind a unified workspace core.
 - **Unified Login:** Supabase Auth (Email/Password + Magic Link + Google Login).
-- **Billing Portal:** Razorpay integration to handle subscription upgrades and single-pay orders.
+- **Billing Portal:** Dodo Payments integration to handle subscription upgrades and single-pay orders.
 - **Quota Tracking:** A centralized `usage_logs` database table enforcing daily request counts.
 - **Global Dashboard:** A Neo-Brutalism styled web hub listing user stats, current usage, and click-through options for all 5 apps.
 

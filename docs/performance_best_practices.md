@@ -12,11 +12,11 @@ To minimize JavaScript sent to the client browser, keep components as **Server C
 - **Client Tasks:** Forms, buttons, real-time counters, search filters (`'use client'`).
 
 ### 1.2 Bundle Splitting & Dynamic Imports
-For large client-side libraries (like the Razorpay checkout script, dashboards, or charts), load them dynamically:
+For large client-side libraries (like the Dodo Payments checkout script, dashboards, or charts), load them dynamically:
 ```typescript
 import dynamic from 'next/dynamic'
 
-const RazorpayWidget = dynamic(() => import('@/components/RazorpayWidget'), {
+const DodoPaymentsWidget = dynamic(() => import('@/components/DodoPaymentsWidget'), {
   ssr: false, // Prevents loading on server-side render
   loading: () => <p>Loading payment widget...</p>
 })

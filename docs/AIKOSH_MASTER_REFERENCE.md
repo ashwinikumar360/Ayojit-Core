@@ -762,7 +762,7 @@ Eligibility signals for Ayojit Intelligence:
 | HindiDiff model + backend | **Hugging Face Spaces** | Free CPU; $9/mo T4 GPU upgrade | Docker Space hosts Baaz-v1 + FastAPI |
 | Database + Auth | **Supabase** | 500MB Postgres, 50K MAU, 1GB storage, free TLS | One shared project covers all 5 apps |
 | Image/file storage | **Cloudinary** | 25GB storage, 25GB bandwidth/mo | HindiDiff generated images, DocPatram outputs |
-| Payments | **Razorpay** | No fixed cost; ~2% per transaction | UPI + cards + net banking; webhook verification free |
+| Payments | **Dodo Payments** | No fixed cost; ~2% per transaction | UPI + cards + net banking; webhook verification free |
 | Voice telephony | **Twilio** | $15 trial credit | Only paid component for Kisan Voice AI; B2G contract covers |
 | UI component library | **Neo-Brutalism UI** | MIT license | [neo-brutalism-ui-library.vercel.app](https://neo-brutalism-ui-library.vercel.app) |
 | CSS framework | **Tailwind CSS** | MIT license | Bundled with Next.js |
@@ -1168,7 +1168,7 @@ PRIORITY 1 — Block build without these:
 [ ] Supabase — app.supabase.com → New project
 [ ] Vercel — vercel.com → Import repo
 [ ] Render.com — render.com → New web service × 4
-[ ] Razorpay TEST MODE — razorpay.com → Dashboard → test keys
+[ ] Dodo Payments TEST MODE — dodopayments.com → Dashboard → Settings → API Keys
 [ ] Cloudinary — cloudinary.com → Free account
 [ ] HuggingFace — huggingface.co → account (for Spaces + model downloads)
 
@@ -1181,7 +1181,7 @@ PRIORITY 2 — Register within 1 week:
 
 PRIORITY 3 — Before B2G launch:
 [ ] Twilio — twilio.com → account → $15 trial credit → India DID TRAI registration
-[ ] Razorpay LIVE MODE — submit KYC documents → activate live keys
+[ ] Dodo Payments LIVE MODE — submit KYC documents → activate live keys
 [ ] Sarvam Startup Programme — sarvam.ai/startup → apply for 12mo free credits
 [ ] Bhashini Commercial (if needed) — bhashini.ai → ₹250/mo TTS subscription
 [ ] UptimeRobot — uptimerobot.com → Free account → 50 monitors → ping all Render services
@@ -1275,7 +1275,7 @@ For each resource, check the artefact page on AIKosh for:
 
 | Resource | Cost | When triggered |
 |---|---|---|
-| Razorpay | ~2% per transaction | When users pay — self-funding |
+| Dodo Payments | ~2% per transaction | When users pay — self-funding |
 | Anthropic (Claude API) | ~₹2,000/mo | PinAI NL insights; cache aggressively |
 | Twilio voice | ~$0.01/min | Kisan Voice AI — pass cost to B2G contract |
 | HF Spaces T4 GPU | $9/mo | Only if HindiDiff free CPU too slow at scale |

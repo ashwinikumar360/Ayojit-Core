@@ -13,7 +13,7 @@ Read AIKOSH_MVP_MASTERPLAN.md sections 1, 5, and 6.
 
 Build the "Ayojit Core" shared layer in /core and /lib:
 - core/auth.py (Supabase JWT verification + quota enforcement, from §1.3)
-- core/billing.py (Razorpay subscription + webhook, from §1.4)
+- core/billing.py (Dodo Payments subscription + webhook, from §1.4)
 - supabase/schema.sql (from §1.2) with RLS enabled on all tables
 - lib/supabase.ts (browser client)
 - app/dashboard/page.tsx (Neo-Brutalism dashboard, from §1.6)
@@ -59,7 +59,7 @@ Security:
 - All Bhashini/Twilio keys from environment variables only
 
 Add the AIKosh attribution footer (§0.3) to the admin dashboard page.
-No Razorpay billing for this app (B2G contract model) — add a static
+No Dodo Payments billing for this app (B2G contract model) — add a static
 "Request a Government Pilot" CTA instead.
 
 Output: requirements.txt, Dockerfile, .env.example, README with Render deploy steps.
@@ -82,7 +82,7 @@ Build:
 - Next.js page app/apps/pinai/page.tsx — Neo-Brutalism search UI:
   search bar, result cards, quota meter "X/5 today", upgrade CTA when 429 received
 - Billing page app/apps/pinai/billing/page.tsx calling
-  POST /billing/create-subscription/pinai (₹299/mo Razorpay plan)
+  POST /billing/create-subscription/pinai (₹299/mo Dodo Payments plan)
 
 Security:
 - Every /query call requires valid Supabase JWT
@@ -95,7 +95,7 @@ Security:
 Add AIKosh attribution footer (§0.3) to the page.
 
 Output: requirements.txt, Dockerfile, .env.example, README with Render +
-Vercel deploy steps and Razorpay test-mode instructions.
+Vercel deploy steps and Dodo Payments test-mode instructions.
 ```
 
 ---
@@ -119,7 +119,7 @@ Build:
 - Next.js page app/apps/docpatram/page.tsx — Neo-Brutalism upload + generate UI,
   quota meter "X/10 today"
 - "My Documents" dashboard tab listing past generations with download links
-- Billing page (₹999/mo Razorpay) + B2G tender CTA banner
+- Billing page (₹999/mo Dodo Payments) + B2G tender CTA banner
 
 Security:
 - JWT required on all endpoints
@@ -151,7 +151,7 @@ Build:
 - FastAPI POST /file-dispute:
   - check lifetime_usage for existing 'dispute' record
   - if none → allow free, log it
-  - if exists → require a Razorpay ONE-TIME order (₹499) via client.order.create(),
+  - if exists → require a Dodo Payments ONE-TIME order (₹499) via dodo.payments.create(),
     verify payment signature before processing
 - Next.js page app/apps/vaadvivaad/page.tsx — Neo-Brutalism dispute filing form
 - "My Disputes" dashboard tab — status tracker (filed → in review → resolved),
@@ -159,7 +159,7 @@ Build:
 
 Security:
 - JWT required on all endpoints
-- Validate Razorpay order payment signature server-side before marking dispute
+- Validate Dodo Payments order payment signature server-side before marking dispute
   as paid/processed — never trust client-side "payment success" alone
 - Sanitize all free-text dispute descriptions (max length 5000 chars, strip HTML)
 - Rate limit 3 req/min/IP
@@ -168,7 +168,7 @@ Security:
 Add AIKosh attribution footer (§0.3).
 
 Output: requirements.txt, Dockerfile, .env.example, README with Render deploy
-steps and Razorpay one-time payment test instructions.
+steps and Dodo Payments one-time payment test instructions.
 ```
 
 ---
@@ -192,7 +192,7 @@ Build:
   Next.js page app/apps/hindidiff/page.tsx with Neo-Brutalism styling,
   quota meter "X/10 today"
 - "My Gallery" dashboard tab — grid of past generations with re-download
-- Billing page (₹99/mo Razorpay)
+- Billing page (₹99/mo Dodo Payments)
 
 Security:
 - JWT required on /generate
@@ -208,7 +208,7 @@ Security:
 Add AIKosh attribution footer (§0.3).
 
 Output: requirements.txt, Dockerfile (for HF Spaces), .env.example, README
-with HF Spaces + Render + Vercel deploy steps and Razorpay test instructions.
+with HF Spaces + Render + Vercel deploy steps and Dodo Payments test instructions.
 ```
 
 ---

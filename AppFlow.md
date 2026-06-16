@@ -53,7 +53,7 @@
 1. User opens `/apps/pinai`.
 2. UI displays a search input, category selector (e.g., retail, pharmacy), and quota meter.
 3. User enters a 6-digit pincode -> Clicks "Analyze".
-4. If daily quota exceeded: Show Razorpay upgrade prompt -> redirect to billing.
+4. If daily quota exceeded: Show Dodo Payments upgrade prompt -> redirect to billing.
 5. If quota allowed: Backend performs SQLite lookup -> Claude Haiku consults metrics -> Returns structured JSON.
 6. UI displays the rating (e.g., "HIGH POTENTIAL"), a 3-sentence consultancy insight, and nearby business viability stats.
 

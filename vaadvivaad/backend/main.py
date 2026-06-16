@@ -78,10 +78,8 @@ class DisputeCreate(BaseModel):
     respondent_phone: Optional[str] = Field(None, max_length=15)
     language: str = Field("hi", description="Primary language choice ('hi' or 'en')")
     
-    # Razorpay payment keys for validation of 2nd+ disputes
-    razorpay_order_id: Optional[str] = None
-    razorpay_payment_id: Optional[str] = None
-    razorpay_signature: Optional[str] = None
+    # Dodo Payments transaction validation
+    dodo_payment_id: Optional[str] = None
 
     @field_validator("dispute_type")
     @classmethod
@@ -122,16 +120,37 @@ def root():
     }
 
 
-def verify_razorpay_signature(order_id: str, payment_id: str, signature: str) -> bool:
-    """Verifies that the payment token signature matches Razorpay signature parameters."""
-    secret = os.getenv("RAZORPAY_KEY_SECRET", "")
-    if not secret:
-        logger.error("RAZORPAY_KEY_SECRET is not configured!")
+def verify_dodo_payment(payment_id: str) -> bool:
+    """Verifies that the payment with the given ID was successful on Dodo Payments."""
+    if not payment_id:
+        return False
+    
+    api_key = os.getenv("DODO_API_KEY")
+    if not api_key:
+        logger.error("DODO_API_KEY is not configured!")
         return False
         
-    msg = f"{order_id}|{payment_id}"
-    expected = hmac.new(secret.encode(), msg.encode(), hashlib.sha256).hexdigest()
-    return hmac.compare_digest(expected, signature)
+    base_url = "https://live.dodopayments.com" if "live" in api_key.lower() else "https://test.dodopayments.com"
+    url = f"{base_url}/checkouts/{payment_id}"
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        import httpx
+        with httpx.Client(timeout=10.0) as client:
+            response = client.get(url, headers=headers)
+            if response.status_code != 200:
+                logger.error(f"Dodo Payments status check failed: {response.status_code} - {response.text}")
+                return False
+            data = response.json()
+            status = data.get("payment_status") or data.get("status")
+            return status == "succeeded"
+    except Exception as e:
+        logger.error(f"Error checking Dodo Payments status: {str(e)}")
+        return False
 
 
 @app.post("/dispute/file")
@@ -157,7 +176,7 @@ async def file_dispute(request: Request, dispute: DisputeCreate, background_task
 
     if existing and existing.data:
         # User has already used their free dispute. Verify payment parameters
-        if not dispute.razorpay_order_id or not dispute.razorpay_payment_id or not dispute.razorpay_signature:
+        if not dispute.dodo_payment_id:
             raise HTTPException(
                 status_code=402,
                 detail={
@@ -167,9 +186,9 @@ async def file_dispute(request: Request, dispute: DisputeCreate, background_task
                 }
             )
         
-        # Verify transaction signature
-        if not verify_razorpay_signature(dispute.razorpay_order_id, dispute.razorpay_payment_id, dispute.razorpay_signature):
-            raise HTTPException(status_code=400, detail="Invalid Razorpay transaction signature")
+        # Verify transaction status
+        if not verify_dodo_payment(dispute.dodo_payment_id):
+            raise HTTPException(status_code=400, detail="Invalid Dodo Payments transaction")
 
     # Create dispute
     dispute_id = create_dispute(
