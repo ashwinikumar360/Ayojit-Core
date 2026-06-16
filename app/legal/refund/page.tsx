@@ -25,7 +25,7 @@ export default function Refund() {
         <section className="mb-6">
           <h2 className="text-xl font-black uppercase mb-2">3. Refund Requests</h2>
           <p className="text-zinc-700">
-            If a double charge or transaction error occurs during billing via Razorpay, please raise a ticket with payment IDs within 7 business days. Approved refunds are credited to the original payment source within 5–7 working days.
+            If a double charge or transaction error occurs during billing via Dodo Payments, please raise a ticket with payment IDs within 7 business days. Approved refunds are credited to the original payment source within 5–7 working days.
           </p>
         </section>
 

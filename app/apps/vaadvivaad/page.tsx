@@ -48,12 +48,6 @@ export default function VaadVivaad() {
         fetchQuota(user.id)
       }
     })()
-
-    // Dynamically load Razorpay checkout script
-    const script = document.createElement('script')
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-    script.async = true
-    document.body.appendChild(script)
   }, [])
 
   const fetchQuota = async (userId: string) => {
@@ -87,34 +81,31 @@ export default function VaadVivaad() {
       const token = session.data.session?.access_token
 
       if (quotaUsed >= 1) {
-        // Razorpay checkout flow first
-        // 1. Create Order on Backend (we mock it or fetch a session, let's prompt the Razorpay flow)
-        // Since we need to verify a signature, let's open Razorpay test frame
-        const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_mock_keys",
-          amount: 49900, // INR 499 in paisa
-          currency: "INR",
-          name: "Ayojit Intelligence",
-          description: "VaadVivaad Resolution Fee",
-          handler: async function (response: any) {
-            // Post dispute data along with payment signatures
-            await submitDispute({
-              ...form,
-              amount: parseFloat(form.amount),
-              razorpay_order_id: response.razorpay_order_id || "order_test_mock",
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature || "sig_test_mock"
-            }, token)
-          },
-          prefill: {
-            name: form.complainant_name,
-            contact: form.complainant_phone
-          },
-          theme: { color: "#F87171" }
+        // Save form draft to localStorage
+        localStorage.setItem("vaadvivaad_dispute_draft", JSON.stringify({
+          ...form,
+          amount: parseFloat(form.amount)
+        }))
+
+        // Call backend API to create a one-time Dodo checkout session
+        const res = await fetch(`${API_BASE}/billing/create-one-time-payment?amount=499&description=VaadVivaad%20Dispute`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        })
+
+        if (!res.ok) {
+          throw new Error("Failed to create billing session")
         }
-        const rzp = new (window as any).Razorpay(options)
-        rzp.open()
-        setLoading(false)
+
+        const data = await res.json()
+        if (data.checkout_url) {
+          window.location.href = data.checkout_url
+        } else {
+          throw new Error("Invalid checkout response from server")
+        }
       } else {
         // Free dispute
         await submitDispute({

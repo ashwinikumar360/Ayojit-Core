@@ -17,12 +17,6 @@ export default function PinAIBilling() {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
     })()
-
-    // Dynamically load Razorpay checkout script
-    const script = document.createElement('script')
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-    script.async = true
-    document.body.appendChild(script)
   }, [])
 
   const handleSubscribe = async () => {
@@ -52,27 +46,11 @@ export default function PinAIBilling() {
       }
 
       const data = await res.json()
-      const subscriptionId = data.subscription_id
-
-      // 2. Open Razorpay checkout interface
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_mock_keys",
-        subscription_id: subscriptionId,
-        name: "Ayojit Intelligence",
-        description: "PinAI Pro Subscription",
-        handler: async function (response: any) {
-          setSuccess(true)
-        },
-        prefill: {
-          email: user.email,
-        },
-        theme: {
-          color: "#EAB308"
-        }
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url
+      } else {
+        throw new Error("Invalid checkout response from server")
       }
-
-      const rzp = new (window as any).Razorpay(options)
-      rzp.open()
     } catch (e: any) {
       setError(e.message || "An unexpected error occurred during subscription processing")
     } finally {
@@ -140,7 +118,7 @@ export default function PinAIBilling() {
         </button>
 
         <p className="text-[10px] text-zinc-500 font-mono mt-4 text-center">
-          Secured by Razorpay. Auto-renews monthly until cancelled. Refunds are subject to terms of service.
+          Secured by Dodo Payments. Auto-renews monthly until cancelled. Refunds are subject to terms of service.
         </p>
 
       </div>

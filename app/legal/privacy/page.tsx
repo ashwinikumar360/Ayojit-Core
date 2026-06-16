@@ -14,7 +14,7 @@ export default function Privacy() {
         <section className="mb-6">
           <h2 className="text-xl font-black uppercase mb-2">1. Information We Collect</h2>
           <p className="text-zinc-700">
-            We collect basic contact information (full name, email address, phone number) when you register via Supabase Auth. We do not store financial payment information directly; all subscription payment records are processed securely through Razorpay.
+            We collect basic contact information (full name, email address, phone number) when you register via Supabase Auth. We do not store financial payment information directly; all subscription payment records are processed securely through Dodo Payments.
           </p>
         </section>
 

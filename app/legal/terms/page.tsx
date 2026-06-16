@@ -18,7 +18,7 @@ export default function Terms() {
         <section className="mb-6">
           <h2 className="text-xl font-black uppercase mb-2">2. Usage Limits & Subscription</h2>
           <p className="text-zinc-700">
-            We provide a free usage quota for our services. Once the free tier threshold is reached, you must subscribe to our paid plans via Razorpay to continue using the endpoints. Account sharing or abusing API quota checks is strictly prohibited.
+            We provide a free usage quota for our services. Once the free tier threshold is reached, you must subscribe to our paid plans via Dodo Payments to continue using the endpoints. Account sharing or abusing API quota checks is strictly prohibited.
           </p>
         </section>
 
